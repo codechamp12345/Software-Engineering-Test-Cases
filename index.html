@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login and Signup</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(orange,white,green);
+    }
+
+    .container {
+      width: 320px;
+      padding: 20px;
+      border-top-left-radius: 20px;
+      border-end-end-radius: 20px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    .container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .container input[type="text"],
+    .container input[type="password"],
+    .container input[type="email"],
+    .container button {
+      width: 93%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #000000;
+      border-radius: 20px;
+    }
+
+    .container button {
+    margin-left: 10px;
+      background-color: #00ff3c;
+      color: rgb(0, 0, 0);
+      cursor: pointer;
+    }
+
+    .container button:hover {
+      background-color: #0bff79;
+    }
+
+    .switch {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .switch a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    .switch a:hover {
+      text-decoration: underline;
+    }
+
+    .message {
+      text-align: center;
+      color: rgb(18, 239, 81);
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="authContainer">
+    <div id="signupForm">
+      <h2>Sign Up</h2>
+      <div class="message" id="signupMessage"></div>
+      <input type="text" id="signupUsername" placeholder="Username" required>
+      <input type="email" id="signupEmail" placeholder="Email" required>
+      <input type="password" id="signupPassword" placeholder="Password" required>
+      <button onclick="signup()">Sign Up</button>
+      <div class="switch">
+        Already have an account? <a href="#" onclick="toggleForm()">Log In</a>
+      </div>
+    </div>
+
+    <div id="loginForm" style="display:none;">
+      <h2>Log In</h2>
+      <div class="message" id="loginMessage"></div>
+      <input type="text" id="loginUsername" placeholder="Username" required>
+      <input type="password" id="loginPassword" placeholder="Password" required>
+      <button onclick="login()">Log In</button>
+      <div class="switch">
+        Don't have an account? <a href="#" onclick="toggleForm()">Sign Up</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Use localStorage for persistent data storage
+    let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];  // Initialize if not present
+
+    function signup() {
+      let username = document.getElementById('signupUsername').value;
+      let email = document.getElementById('signupEmail').value;
+      let password = document.getElementById('signupPassword').value;
+
+      if (username === '' || email === '' || password === '') {
+        document.getElementById('signupMessage').innerText = "Please fill in all fields.";
+        return;
+      }
+
+      // Check for existing username
+      let existingUser = users.find(user => user.username === username);
+      if (existingUser) {
+        document.getElementById('signupMessage').innerText = "Username already exists.";
+        return;
+      }
+
+      // Save user details
+      users.push({
+        username: username,
+        email: email,
+        password: password
+      });
+
+      // Save the updated users array to localStorage
+      localStorage.setItem('registeredUsers', JSON.stringify(users));
+
+      console.log("Registered Users:", users);
+
+      // Clear fields and switch to login form
+      document.getElementById('signupMessage').innerText = "Sign up successful!";
+      setTimeout(() => {
+        toggleForm();
+        clearSignupForm();
+      }, 1000);
+    }
+
+    function login() {
+      let username = document.getElementById('loginUsername').value;
+      let password = document.getElementById('loginPassword').value;
+
+      // Find if the user exists
+      let user = users.find(user => user.username === username && user.password === password);
+
+      if (user) {
+        document.getElementById('loginMessage').innerText = "Login successful!";
+        console.log("Logged in User:", user);
+      } else {
+        document.getElementById('loginMessage').innerText = "Invalid username or password.";
+      }
+    }
+
+    function toggleForm() {
+      let loginForm = document.getElementById('loginForm');
+      let signupForm = document.getElementById('signupForm');
+      loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+      signupForm.style.display = signupForm.style.display === 'none' ? 'block' : 'none';
+
+      // Clear messages
+      document.getElementById('loginMessage').innerText = "";
+      document.getElementById('signupMessage').innerText = "";
+    }
+
+    function clearSignupForm() {
+      document.getElementById('signupUsername').value = '';
+      document.getElementById('signupEmail').value = '';
+      document.getElementById('signupPassword').value = '';
+    }
+  </script>
+
+</body>
+</html>
